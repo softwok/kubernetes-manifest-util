@@ -31,13 +31,19 @@ type template struct {
 }
 
 type templateSpec struct {
-	Volumes []volume `yaml:"volumes"`
+	Volumes    []volume    `yaml:"volumes"`
+	Containers []container `yaml:"containers"`
 }
 
 type volume struct {
 	Name      string    `yaml:"name"`
 	Secret    secret    `yaml:"secret"`
 	ConfigMap configMap `yaml:"configMap"`
+}
+
+type container struct {
+	Name  string `yaml:"name"`
+	Image string `yaml:"image"`
 }
 
 type secret struct {
@@ -87,6 +93,7 @@ func findAndReplace(fileName string, find string, replace string) {
 func main() {
 	fileName := os.Args[1]
 	operation := os.Args[2]
+	value := os.Args[3]
 
 	var c conf
 	c.getConf(fileName)
@@ -107,6 +114,16 @@ func main() {
 		nextConfigName := strings.Replace(configName, "v"+currentConfigVersion, "v"+strconv.Itoa(currentConfigVersionInt+1), -1)
 		fmt.Print(nextConfigName)
 		findAndReplace(fileName, configName, nextConfigName)
+	} else if operation == "update-docker-image" {
+		containers := c.Spec.Template.Spec.Containers
+		for i := range containers {
+			container := containers[i]
+			dockerImageNameSplit := strings.Split(value, ":")
+			dockerImagePath := dockerImageNameSplit[0]
+			if strings.Contains(container.Image, dockerImagePath) {
+				findAndReplace(fileName, container.Image, value)
+			}
+		}
 	} else {
 		// Defaults to Deployment Kind
 		volumes := c.Spec.Template.Spec.Volumes

@@ -10,3 +10,8 @@ spec:
         - name: app-configmap
           configMap:
             name: app-configmap-v0
+      containers:
+        - name: app-container
+          image: app:1.0.0
+          ports:
+            - containerPort: 8080
