@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+        - name: app-secret
+          secret:
+            secretName: app-secret-v0
+        - name: app-configmap
+          configMap:
+            name: app-configmap-v0
