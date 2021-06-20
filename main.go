@@ -93,7 +93,6 @@ func findAndReplace(fileName string, find string, replace string) {
 func main() {
 	fileName := os.Args[1]
 	operation := os.Args[2]
-	value := os.Args[3]
 
 	var c conf
 	c.getConf(fileName)
@@ -115,6 +114,7 @@ func main() {
 		fmt.Print(nextConfigName)
 		findAndReplace(fileName, configName, nextConfigName)
 	} else if operation == "update-docker-image" {
+		value := os.Args[3]
 		containers := c.Spec.Template.Spec.Containers
 		for i := range containers {
 			container := containers[i]
